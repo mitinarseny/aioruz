@@ -1,4 +1,5 @@
-# Async HSE RUZ API cleint for Python3
+# aioruz
+Async HSE RUZ API client for Python3
 ## Usage
 To obtain student's schedule:
 
