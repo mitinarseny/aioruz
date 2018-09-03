@@ -18,6 +18,7 @@ async def main():
                                 person_id=12345,
                                 from_date=date.today(),
                                 to_date=date.today() + timedelta(days=7))
+
     # Get student's info by email
     print(await aioruz.student_info('example@edu.hse.ru'))
 
