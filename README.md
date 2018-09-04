@@ -1,4 +1,5 @@
 # aioruz
+[![PyPI version shields.io](https://img.shields.io/pypi/v/aioruz.svg)](https://pypi.org/project/aioruz/)
 > Async HSE RUZ API client for Python 3.
 ## Usage
 To obtain student's schedule:
