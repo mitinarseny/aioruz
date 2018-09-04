@@ -36,3 +36,5 @@ Install via Pip:
 ```bash
 pip install aioruz
 ```
+# Feedback
+Please, send your bug reports to [this](https://t.me/joinchat/BpQR5w35HBg3CB1zJYlRHw) Telegram chat.
