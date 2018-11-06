@@ -5,4 +5,5 @@ aioruz/api.py
 aioruz.egg-info/PKG-INFO
 aioruz.egg-info/SOURCES.txt
 aioruz.egg-info/dependency_links.txt
+aioruz.egg-info/requires.txt
 aioruz.egg-info/top_level.txt

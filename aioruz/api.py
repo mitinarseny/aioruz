@@ -1,3 +1,4 @@
+import os
 import re
 from datetime import date, timedelta
 from typing import Union
@@ -13,6 +14,7 @@ STUDENT_INFO_ENDPOINT = 'studentinfo'
 SEARCH_INDPOINT = 'search'
 
 HSE_EMAIL_SCHEMA = re.compile(r"^[a-z0-9._-]{3,}@(edu\.)?hse\.ru$")
+VERIFY_SSL = os.environ.get('RUZ_VERIFY_SSL', False)
 
 
 def is_hse_email(email: str) -> bool:
@@ -33,6 +35,16 @@ def _date_to_ruz_date(d: date) -> str:
     return d.strftime('%Y.%m.%d')
 
 
+async def get(url: str, params: dict):
+    async with aiohttp.ClientSession(
+            connector=aiohttp.TCPConnector(verify_ssl=VERIFY_SSL)) as session:
+        async with session.get(url, params=params) as r:
+            j = await r.json()
+            if 'error' in j:
+                raise LookupError('Bad Request')
+            return j
+
+
 async def search(q: str, type: str = 'student') -> list:
     """
     Search by query.
@@ -43,9 +55,7 @@ async def search(q: str, type: str = 'student') -> list:
     url = '/'.join((BASE_URL, SEARCH_INDPOINT))
     params = {'term': q,
               'type': type}
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url, params=params) as r:
-            return await r.json()
+    return await get(url, params)
 
 
 async def student_info(email: str) -> dict:
@@ -56,9 +66,7 @@ async def student_info(email: str) -> dict:
     """
     url = '/'.join((BASE_URL, STUDENT_INFO_ENDPOINT))
     params = {'email': email}
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url, params=params) as r:
-            return await r.json()
+    return await get(url, params)
 
 
 async def schedule(person_type: str,
@@ -90,9 +98,7 @@ async def schedule(person_type: str,
     url = '/'.join((BASE_URL, SCHEDULE_ENDPOINT, person_type, str(person_id)))
     params = {'lng': language, 'start': _date_to_ruz_date(from_date), 'finish': _date_to_ruz_date(to_date)}
 
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url, params=params) as r:
-            return await r.json()
+    return await get(url, params)
 
 
 async def student_schedule(email: str,

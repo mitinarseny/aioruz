@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="aioruz",
-    version="0.0.1",
+    version="0.1.0",
     author="Arseny Mitin",
     author_email="mitinarseny@gmail.com",
     description="Async HSE RUZ API client for Python3",
@@ -13,6 +13,10 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/mitinarseny/aioruz",
     packages=setuptools.find_packages(),
+    install_requires=[
+        'aiohttp==3.4.2',
+        'asyncio==3.4.3'
+    ],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
