@@ -53,7 +53,7 @@ class Lesson(object):
     def __get_datetime_with_tz(self,
                                date: str,
                                time: str) -> datetime:
-        tz_name = CAMPUS_TIMEZONES[self.campus]
+        tz_name = CAMPUS_TIMEZONES.get(self.campus, 'Europe/Moscow')
         dt = datetime.strptime(
             'T'.join((date, time)),
             '%Y.%m.%dT%H:%M'
@@ -62,10 +62,13 @@ class Lesson(object):
         return dt_loc
 
     @staticmethod
-    def __ruz_to_py_dt(s: str) -> datetime:
-        iso_str = '+'.join(s.split('Z'))
-        dt = datetime.fromisoformat(iso_str)
-        return dt
+    def __ruz_to_py_dt(s: str) -> Union[datetime, None]:
+        try:
+            iso_str = '+'.join(s.split('Z'))
+            dt = datetime.fromisoformat(iso_str)
+            return dt
+        except (AttributeError, ValueError):
+            return None
 
     @property
     def auditorium_index(self) -> str:
