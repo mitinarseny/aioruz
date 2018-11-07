@@ -8,4 +8,4 @@ from .api import (Lesson,
                   VERIFY_SSL)
 
 name = "aioruz"
-__version__ = (0.5)
+__version__ = (0.6)

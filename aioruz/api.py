@@ -61,6 +61,12 @@ class Lesson(object):
         dt_loc = pytz.timezone(tz_name).localize(dt, is_dst=True)
         return dt_loc
 
+    @staticmethod
+    def __ruz_to_py_dt(s: str) -> datetime:
+        iso_str = '+'.join(s.split('Z'))
+        dt = datetime.fromisoformat(iso_str)
+        return dt
+
     @property
     def auditorium_index(self) -> str:
         return self.auditorium.split('/')[-1]
@@ -78,10 +84,16 @@ class Lesson(object):
         return self.__get_datetime_with_tz(self.date, self.endLesson)
 
     @property
-    def modified_at(self):
-        iso_str = '+'.join(self.modifieddate.split('Z'))
-        dt = datetime.fromisoformat(iso_str)
-        return dt
+    def modified_at(self) -> Union[datetime, None]:
+        if isinstance(self.modifieddate, str):
+            return Lesson.__ruz_to_py_dt(self.modifieddate)
+        return None
+
+    @property
+    def created_at(self) -> Union[datetime, None]:
+        if isinstance(self.createddate, str):
+            return Lesson.__ruz_to_py_dt(self.createddate)
+        return None
 
 
 BASE_URL = 'http://ruz.hse.ru/api'
