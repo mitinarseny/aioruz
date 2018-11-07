@@ -38,11 +38,12 @@ pip install aioruz
 ```
 
 ## Security
-By default SSL certificate validation is off. To ebale it, set `RUZ_VERIFY_SSL` environment virable to `True`.
+By default SSL certificate validation is off. To ebale it, set `aioruz.VERIFY_SSL` to `True`.
 ```python
-import os
+import aioruz
 
-os.environ['RUZ_VERIFY_SSL'] = True
+aioruz.VERIFY_SSL = True
 ```
+Or you can set `RUZ_VERIFY_SSL` environment virable to `True`.
 # Feedback
 Please, send your bug reports to [this](https://t.me/joinchat/BpQR5w35HBg3CB1zJYlRHw) Telegram chat.

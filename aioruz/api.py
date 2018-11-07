@@ -1,9 +1,82 @@
 import os
 import re
-from datetime import date, timedelta
-from typing import Union
+from dataclasses import dataclass
+from datetime import datetime, date, timedelta
+from typing import Union, Any, List
 
 import aiohttp
+import pytz
+
+CAMPUS_TIMEZONES = {
+    'М': 'Europe/Moscow',
+    'СПБ': 'Europe/Moscow',
+    'НН': 'Europe/Moscow',
+    'П': 'Asia/Yekaterinburg'
+}
+
+
+@dataclass
+class Lesson(object):
+    auditorium: str
+    auditoriumAmount: int
+    auditoriumOid: int
+    author: str
+    beginLesson: str
+    building: str
+    createddate: str
+    date: str
+    dateOfNest: str
+    dayOfWeek: int
+    dayOfWeekString: str
+    detailInfo: str
+    discipline: str
+    disciplineOid: int
+    disciplineinplan: str
+    disciplinetypeload: int
+    endLesson: str
+    group: Any
+    groupOid: int
+    hideincapacity: int
+    isBan: bool
+    kindOfWork: str
+    lecturer: str
+    lecturerOid: int
+    lessonNumberEnd: int
+    lessonNumberStart: int
+    modifieddate: str
+    parentschedule: str
+    stream: str
+    streamOid: int
+    subGroup: Any
+    subGroupOid: int
+
+    def __get_datetime_with_tz(self,
+                               date: str,
+                               time: str) -> datetime:
+        tz_name = CAMPUS_TIMEZONES[self.campus]
+        dt = datetime.strptime(
+            'T'.join((date, time)),
+            '%Y.%m.%dT%H:%M'
+        )
+        dt_loc = pytz.timezone(tz_name).localize(dt, is_dst=True)
+        return dt_loc
+
+    @property
+    def auditorium_index(self) -> str:
+        return self.auditorium.split('/')[-1]
+
+    @property
+    def campus(self) -> str:
+        return self.auditorium.split(' ')[0]
+
+    @property
+    def starts_at(self) -> datetime:
+        return self.__get_datetime_with_tz(self.date, self.beginLesson)
+
+    @property
+    def ends_at(self) -> datetime:
+        return self.__get_datetime_with_tz(self.date, self.endLesson)
+
 
 BASE_URL = 'http://ruz.hse.ru/api'
 ALLOWED_PERSON_TYPES = ('student', 'lecturer')
@@ -35,7 +108,7 @@ def _date_to_ruz_date(d: date) -> str:
     return d.strftime('%Y.%m.%d')
 
 
-async def get(url: str, params: dict):
+async def api_request(url: str, params: dict):
     async with aiohttp.ClientSession(
             connector=aiohttp.TCPConnector(verify_ssl=VERIFY_SSL)) as session:
         async with session.get(url, params=params) as r:
@@ -45,17 +118,17 @@ async def get(url: str, params: dict):
             return j
 
 
-async def search(q: str, type: str = 'student') -> list:
+async def search(q: str, person_type: str = 'student') -> list:
     """
     Search by query.
-    :param q: `str` query to searsh for
-    :param type: 'student', 'lecturer', 'group', 'auditorium'
+    :param q: `str` query to search for
+    :param person_type: 'student', 'lecturer', 'group', 'auditorium'
     :return: list of results
     """
     url = '/'.join((BASE_URL, SEARCH_INDPOINT))
     params = {'term': q,
-              'type': type}
-    return await get(url, params)
+              'type': person_type}
+    return await api_request(url, params)
 
 
 async def student_info(email: str) -> dict:
@@ -66,14 +139,14 @@ async def student_info(email: str) -> dict:
     """
     url = '/'.join((BASE_URL, STUDENT_INFO_ENDPOINT))
     params = {'email': email}
-    return await get(url, params)
+    return await api_request(url, params)
 
 
 async def schedule(person_type: str,
                    person_id: int,
                    from_date: date = None,
                    to_date: Union[date, int] = None,
-                   language: int = 1) -> list:
+                   language: int = 1) -> List[Lesson]:
     """
     Get schedule for users with specified person_type and person_id.
     :param person_type: 'student' or 'lecturer'
@@ -83,7 +156,7 @@ async def schedule(person_type: str,
     :param language: `int` (default 1)
      1 for Russian
      2 for English
-    :return: `list` of lessons
+    :return: `List[Lesson]`
     """
     if person_type not in ALLOWED_PERSON_TYPES:
         raise ValueError(f'\'person_type\' must be one of {ALLOWED_PERSON_TYPES}, got {person_type} instead.')
@@ -98,7 +171,11 @@ async def schedule(person_type: str,
     url = '/'.join((BASE_URL, SCHEDULE_ENDPOINT, person_type, str(person_id)))
     params = {'lng': language, 'start': _date_to_ruz_date(from_date), 'finish': _date_to_ruz_date(to_date)}
 
-    return await get(url, params)
+    j = api_request(url, params)
+    res = list()
+    for lesson in await j:
+        res.append(Lesson(**lesson))
+    return res
 
 
 async def student_schedule(email: str,
