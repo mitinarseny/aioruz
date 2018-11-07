@@ -77,6 +77,12 @@ class Lesson(object):
     def ends_at(self) -> datetime:
         return self.__get_datetime_with_tz(self.date, self.endLesson)
 
+    @property
+    def modified_at(self):
+        iso_str = '+'.join(self.modifieddate.split('Z'))
+        dt = datetime.fromisoformat(iso_str)
+        return dt
+
 
 BASE_URL = 'http://ruz.hse.ru/api'
 ALLOWED_PERSON_TYPES = ('student', 'lecturer')
