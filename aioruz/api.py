@@ -41,6 +41,7 @@ class Lesson(object):
     kindOfWork: str
     lecturer: str
     lecturerOid: int
+    lecturerUID: str
     lessonNumberEnd: int
     lessonNumberStart: int
     modifieddate: str
