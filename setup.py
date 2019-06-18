@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="aioruz",
-    version="0.7.0",
+    version="0.8.0",
     author="Arseny Mitin",
     author_email="mitinarseny@gmail.com",
     description="Async HSE RUZ API client for Python3",

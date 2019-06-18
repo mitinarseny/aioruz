@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: aioruz
-Version: 0.7.0
+Version: 0.8.0
 Summary: Async HSE RUZ API client for Python3
 Home-page: https://github.com/mitinarseny/aioruz
 Author: Arseny Mitin
