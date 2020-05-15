@@ -38,7 +38,7 @@ pip install aioruz
 ```
 
 ## Security
-By default SSL certificate validation is off. To ebale it, set `aioruz.VERIFY_SSL` to `True`.
+By default SSL certificate validation is off. To enable it, set `aioruz.VERIFY_SSL` to `True`.
 ```python
 import aioruz
 
