@@ -14,7 +14,7 @@ setuptools.setup(
     url="https://github.com/mitinarseny/aioruz",
     packages=setuptools.find_packages(),
     install_requires=[
-        'aiohttp==3.4.2',
+        'aiohttp==3.7.4',
         'asyncio==3.4.3'
     ],
     classifiers=[
